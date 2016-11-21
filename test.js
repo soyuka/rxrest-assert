@@ -210,6 +210,16 @@ describe('RxRestAssert', function() {
     })
   })
 
+  it('should respond with an array', function() {
+    rxrestassert.expectGET('test').respond([{a: 'b', id: 1}, {a: 'c', id: 2}])
+
+    return rxrest.all('test')
+    .get()
+    .then(e => {
+      expect(e).to.have.length.of(2)
+    })
+  })
+
   it('should call methods with correct method', function() {
     ;['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'].map(e => {
       rxrestassert.when = function(method) {

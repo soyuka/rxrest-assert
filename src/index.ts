@@ -126,7 +126,7 @@ export class RxRestAssert {
         return
       }
 
-      assert.response = response instanceof Response ? response : new Response(JSON.stringify(response))
+      assert.response = response instanceof Response ? response : new Response(JSON.stringify(response), {status: 200, statusText: 'OK', headers: new Headers()})
     }
 
     return assert
