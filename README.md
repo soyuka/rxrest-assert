@@ -3,6 +3,10 @@ RxRest Assert [![Build Status](https://travis-ci.org/soyuka/rxrest-assert.svg?br
 
 Assertion library for [`RxRest`](https://github.com/soyuka/rxrest).
 
+```
+npm install rxrest-assert --save-dev
+```
+
 ## Example
 
 ```
