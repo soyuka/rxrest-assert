@@ -9,6 +9,9 @@ const rxRest = new RxRest()
 export declare type RequestIdentifier = {url: string|RegExp, method: string}
 
 export type TestFunction = (request: Request) => boolean
+export type RxRestAssertOptions = {
+  log: boolean;
+}
 
 export class RxRestAssertionError extends TypeError {}
 
@@ -19,8 +22,11 @@ export class RxRestAssert {
   $responseInterceptorIndex: number = 0
   $current: any;
   $requestCount: number = 0;
+  log: boolean;
 
-  constructor() {
+  constructor(options: RxRestAssertOptions = {log: false}) {
+    this.log = options.log
+
     this.$requestInterceptorIndex = rxRest.requestInterceptors.push((request: Request) => {
       this.$requestCount++
 
@@ -43,23 +49,29 @@ export class RxRestAssert {
     })
 
     rxRest.fetch = (request: Request) => {
+      const defaultResponse = new Response('{}', {status: 200, statusText: 'OK', headers: new Headers()})
+      this.$log(`Doing a request ${request.method} ${request.url}`)
+
       if (this.$current === null) {
-        return of(new Response('{}'))
+        return of(defaultResponse)
       }
 
       let expectation: any
 
       if (this.$current === 'expectation') {
         expectation = this.$expectations.shift()
+      } else if (this.$current !== null) {
+        expectation = this.$whens.get(this.$current)
+      }
+
+      if (expectation !== undefined) {
         expectation(request)
         this.$requestCount--
       } else {
-        expectation = this.$whens.get(this.$current)
-        expectation(request)
-        this.$requestCount--
+        this.$throw(`Request ${request.method} ${request.url} not expected`)
       }
 
-      let response = expectation.response ? expectation.response : new Response('{}')
+      let response = expectation.response ? expectation.response : defaultResponse
 
       return of(response)
     }
@@ -74,6 +86,7 @@ export class RxRestAssert {
   $expectation(method: string, url: string|RegExp, data?: Request|TestFunction, assertion: boolean = true) {
     const self = this
 
+    this.$log(`Preparing expectation on ${method} ${url}`)
     const assert: any = function(request: Request) {
       if (assertion === false) {
         return
@@ -130,6 +143,14 @@ export class RxRestAssert {
     }
 
     return assert
+  }
+
+  $log(message: string) {
+    if (this.log === false) {
+      return
+    }
+
+    console.error(message)
   }
 
   $throw(message: string) {
