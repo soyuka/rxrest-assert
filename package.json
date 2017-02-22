@@ -24,12 +24,12 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.1.0",
     "node-fetch": "github:bitinn/node-fetch#v2",
-    "rxrest": "^1.1.6",
+    "rxrest": "^1.1.23",
     "tslint": "^3.15.1",
     "typescript": "^2.0.3"
   },
   "peerDependencies": {
-    "rxrest": "^1.1.5"
+    "rxrest": "^1.1.23"
   },
   "typings": "lib/index.d.ts",
   "dependencies": {

@@ -12,6 +12,8 @@ export type TestFunction = (request: Request) => boolean
 export type RxRestAssertOptions = {
   log: boolean;
 }
+export type Respond = (response: Response|Object|number) => Assertion
+export type Assertion = {method: string; url: string; respond: Respond}
 
 export class RxRestAssertionError extends TypeError {}
 
@@ -166,7 +168,7 @@ export class RxRestAssert {
     return (url instanceof RegExp && url.test(requestURL)) || url === requestURL
   }
 
-  expect(method: string, url: string|RegExp, data?: Request|TestFunction): Object {
+  expect(method: string, url: string|RegExp, data?: Request|TestFunction): {respond: Respond} {
     method = method.toUpperCase()
     let expect = this.$expectation(method, url, data)
     let index = this.$expectations.push(expect)
@@ -197,7 +199,7 @@ export class RxRestAssert {
     return this.expect('DELETE', url, data)
   }
 
-  when(method: string, url: string|RegExp, data?: Request): Object {
+  when(method: string, url: string|RegExp, data?: Request): {respond: Respond} {
     method = method.toUpperCase()
     let expect = this.$expectation(method, url, data, false)
     this.$whens.set({url: url, method: method}, expect)

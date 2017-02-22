@@ -220,6 +220,27 @@ describe('RxRestAssert', function() {
     })
   })
 
+  it('should catch error with bad status code', function(cb) {
+    rxrestassert.expectDELETE('test').respond(500)
+
+    rxrest.all('test')
+    .remove()
+    .observe()
+    .then(() => {
+    })
+    .catch(() => {
+      cb()
+    })
+    
+  })
+
+  it('should destroy', function() {
+    rxrestassert.destroy()
+    expect(rxrestInstance.requestInterceptors).to.have.length.of(0)
+    expect(rxrestInstance.responseInterceptors).to.have.length.of(0)
+    rxrestassert.verifyNoOutstandingRequest()
+  })
+
   it('should call methods with correct method', function() {
     ;['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'].map(e => {
       rxrestassert.when = function(method) {
@@ -233,12 +254,5 @@ describe('RxRestAssert', function() {
       rxrestassert[`when${e}`]()
       rxrestassert[`expect${e}`]()
     })
-  })
-
-  it('should destroy', function() {
-    rxrestassert.destroy()
-    expect(rxrestInstance.requestInterceptors).to.have.length.of(0)
-    expect(rxrestInstance.responseInterceptors).to.have.length.of(0)
-    rxrestassert.verifyNoOutstandingRequest()
   })
 })
