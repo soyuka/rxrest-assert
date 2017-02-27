@@ -9,6 +9,7 @@ global.FormData = require('form-data')
 
 const {RxRest, NewRxRest} = require('rxrest')
 const rxrestInstance = new RxRest()
+
 const rxrest = new NewRxRest()
 
 const {RxRestAssert, RxRestAssertionError} = require('./lib/index.js')
@@ -221,17 +222,24 @@ describe('RxRestAssert', function() {
   })
 
   it('should catch error with bad status code', function(cb) {
+    let i = rxrestInstance.responseInterceptors.push(function(response) {
+      if (response.status === 500) {
+        throw new Error('fail')
+      }
+    })
+
     rxrestassert.expectDELETE('test').respond(500)
 
     rxrest.all('test')
     .remove()
-    .observe()
+    .observe(() => {})
     .then(() => {
     })
-    .catch(() => {
+    .catch((e) => {
+      expect(e.message).to.equal('fail')
+      rxrestInstance.responseInterceptors.length--
       cb()
     })
-    
   })
 
   it('should destroy', function() {
