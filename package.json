@@ -26,14 +26,13 @@
     "node-fetch": "github:bitinn/node-fetch#v2",
     "rxrest": "^1.1.23",
     "tslint": "^3.15.1",
-    "typescript": "^2.0.3"
+    "typescript": "^2.2.1"
   },
   "peerDependencies": {
     "rxrest": "^2.0.0"
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "node-status-codes": "^2.0.1",
-    "typescript": "^2.2.1"
+    "node-status-codes": "^2.0.1"
   }
 }
