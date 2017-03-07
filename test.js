@@ -41,6 +41,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get()
+    .observe(() => {})
     .then(e => {
       rxrestInstance.responseInterceptors.length--
     })
@@ -51,6 +52,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .post({foo: 'bar'})
+    .observe(() => {})
     .then((d) => {
       throw new ReferenceError('Has not fail')
     })
@@ -64,6 +66,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('bar')
     .get()
+    .observe(() => {})
     .then((d) => {
       throw new ReferenceError('Has not fail')
     })
@@ -77,6 +80,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('bar')
     .get()
+    .observe(() => {})
     .then((d) => {
       throw new ReferenceError('Has not fail')
     })
@@ -92,6 +96,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get()
+    .observe(() => {})
     .then((d) => {
       throw new ReferenceError('Has not fail')
     })
@@ -108,6 +113,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get()
+    .observe(() => {})
     .then((d) => {})
   })
 
@@ -119,6 +125,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get({test: 'foobar'}, headers)
+    .observe(() => {})
     .then((d) => {})
   })
 
@@ -130,6 +137,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get({test: 'foobar'}, {})
+    .observe(() => {})
     .then((d) => {
       throw new ReferenceError('Has not fail')
     })
@@ -143,6 +151,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get({}, {})
+    .observe(() => {})
     .then((d) => {
       throw new ReferenceError('Has not fail')
     })
@@ -156,6 +165,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get({}, {})
+    .observe(() => {})
     .then((d) => {})
   })
 
@@ -167,6 +177,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get({}, {})
+    .observe(() => {})
     .then((d) => {})
   })
 
@@ -183,6 +194,7 @@ describe('RxRestAssert', function() {
   it('should have pending requests', function() {
     return rxrest.one('foo')
     .get()
+    .observe(() => {})
     .then(() => {
       rxrestassert.verifyNoOutstandingRequest()
       throw new ReferenceError('Has not fail')
@@ -199,6 +211,7 @@ describe('RxRestAssert', function() {
 
     return rxrest.one('foo')
     .get({}, {})
+    .observe(() => {})
     .then((d) => {
       rxrestassert.verifyNoOutstandingExpectation()
       throw new ReferenceError('Has not fail')
@@ -213,10 +226,14 @@ describe('RxRestAssert', function() {
 
   it('should respond with an array', function() {
     rxrestassert.expectGET('test').respond([{a: 'b', id: 1}, {a: 'c', id: 2}])
+    const e = []
 
     return rxrest.all('test')
     .get()
-    .then(e => {
+    .observe((d) => {
+      e.push(d)
+    })
+    .then(() => {
       expect(e).to.have.length.of(2)
     })
   })
