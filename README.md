@@ -9,7 +9,7 @@ npm install rxrest-assert --save-dev
 
 ## Example
 
-```
+```javascript
 const {RxRestAssert} = require('rxrest-assert')
 const assert = new RxRestAssert()
 
@@ -35,7 +35,7 @@ The API is inspired by the angular [$httpBackend](https://docs.angularjs.org/api
 
 Expectations must respect requests order.
 
-```
+```javascript
 expect(method, url, [request])
 ```
 
@@ -49,7 +49,7 @@ expect(method, url, [request])
 
 For example, to match headers and query parameters:
 
-```
+```javascript
 let headers = new Headers()
 headers.set('Authorization', 'Bearer foo')
 
@@ -66,17 +66,17 @@ rxrest
 
 Returns an object with a `respond` method:
 
-```
+```javascript
 respond(response: Response|Object|number)
 ```
 
 - If the response is an Object it'll be the response body (json encoded).
-- If it's a number, it will be the reponse status 
+- If it's a number, it will be the reponse status
 - If it's a Response instance, it's taken as is
 
 #### Aliases
 
-```
+```javascript
 expectGET(url, request)
 expectPOST(url, request)
 expectPUT(url, request)
@@ -87,11 +87,11 @@ expectDELETE(url, request)
 
 ### When
 
-`When` doesn't depend on the requests order and it's signature is `{method, url}`. 
+`When` doesn't depend on the requests order and it's signature is `{method, url}`.
 
 The API is the same as expect:
 
-```
+```javascript
 when(method, url, [request])
 ```
 
