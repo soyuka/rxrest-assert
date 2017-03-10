@@ -12,3 +12,4 @@ node_js:
 
 before_script:
   - cd node_modules/node-fetch && npm i && npm run build
+  - cd ../..
