@@ -1,6 +1,6 @@
-///<reference path="../node-status-code.d.ts" />
+/// <reference path="../node-status-code.d.ts" />
 
-import { RxRest } from 'rxrest'
+import { RxRest, RequestInterceptor, ResponseInterceptor } from 'rxrest'
 import {of} from 'most'
 import * as nodeStatusCodes from 'node-status-codes'
 
@@ -59,7 +59,12 @@ export class RxRestAssert {
     })
 
     rxRest.fetch = (request: Request) => {
-      const defaultResponse = new Response('{}', {status: 200, statusText: 'OK', headers: new Headers()})
+      const defaultResponse = new Response('{}', {
+        status: 200,
+        statusText: 'OK',
+        headers: new Headers()
+      })
+
       this.$log(`Doing a request ${request.method} ${request.url}`)
 
       if (this.$current === null) {
@@ -259,13 +264,15 @@ export class RxRestAssert {
     this.$whens = new Map()
     this.$requestCount = 0
     rxRest.fetch = null
-    rxRest.requestInterceptors = rxRest.requestInterceptors.filter((e, i) => {
-      return i === this.$requestInterceptorIndex
-    })
+    rxRest.requestInterceptors = rxRest.requestInterceptors
+      .filter((e: RequestInterceptor, i: number) => {
+        return i === this.$requestInterceptorIndex
+      })
 
-    rxRest.responseInterceptors = rxRest.responseInterceptors.filter((e, i) => {
-      return i === this.$responseInterceptorIndex
-    })
+    rxRest.responseInterceptors = rxRest.responseInterceptors
+      .filter((e: ResponseInterceptor, i: number) => {
+        return i === this.$responseInterceptorIndex
+      })
 
   }
 }
