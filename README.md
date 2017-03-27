@@ -11,7 +11,7 @@ npm install rxrest-assert --save-dev
 
 ```javascript
 const {RxRestAssert} = require('rxrest-assert')
-const assert = new RxRestAssert()
+const assert = new RxRestAssert(new RxRestConfiguration())
 
 assert.expectGET('foo')
 .respond({foo: 'bar', id: 1})
