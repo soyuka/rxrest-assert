@@ -7,18 +7,18 @@ global.Response = Response
 global.Request = Request
 global.FormData = require('form-data')
 
-const {RxRest, NewRxRest} = require('rxrest')
-const rxrestInstance = new RxRest()
+const { RxRest, RxRestConfiguration } = require('rxrest')
 
-const rxrest = new NewRxRest()
+const config = new RxRestConfiguration()
+const rxrest = new RxRest(config)
 
 const {RxRestAssert, RxRestAssertionError} = require('./lib/index.js')
-const rxrestassert = new RxRestAssert()
+const rxrestassert = new RxRestAssert(config)
 
 describe('RxRestAssert', function() {
 
   before(function() {
-    rxrestInstance.baseURL = 'localhost'
+    config.baseURL = 'localhost'
   })
 
   it('should get the correct result', function() {
@@ -34,7 +34,7 @@ describe('RxRestAssert', function() {
   it('should get the correct status result', function() {
     rxrestassert.expect('GET', 'foo').respond(500)
 
-    let i = rxrestInstance.responseInterceptors.push(function(response) {
+    let i = config.responseInterceptors.push(function(response) {
       expect(response.status).to.equal(500)
       expect(response.statusText).to.equal('Internal Server Error')
     })
@@ -43,7 +43,7 @@ describe('RxRestAssert', function() {
     .get()
     .observe(() => {})
     .then(e => {
-      rxrestInstance.responseInterceptors.length--
+      config.responseInterceptors.length--
     })
   })
 
@@ -239,7 +239,7 @@ describe('RxRestAssert', function() {
   })
 
   it('should catch error with bad status code', function(cb) {
-    let i = rxrestInstance.responseInterceptors.push(function(response) {
+    let i = config.responseInterceptors.push(function(response) {
       if (response.status === 500) {
         throw new Error('fail')
       }
@@ -254,15 +254,15 @@ describe('RxRestAssert', function() {
     })
     .catch((e) => {
       expect(e.message).to.equal('fail')
-      rxrestInstance.responseInterceptors.length--
+      config.responseInterceptors.length--
       cb()
     })
   })
 
   it('should destroy', function() {
     rxrestassert.destroy()
-    expect(rxrestInstance.requestInterceptors).to.have.length.of(0)
-    expect(rxrestInstance.responseInterceptors).to.have.length.of(0)
+    expect(config.requestInterceptors).to.have.length.of(0)
+    expect(config.responseInterceptors).to.have.length.of(0)
     rxrestassert.verifyNoOutstandingRequest()
   })
 

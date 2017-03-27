@@ -1,10 +1,8 @@
 /// <reference path="../node-status-code.d.ts" />
 
-import { RxRest, RequestInterceptor, ResponseInterceptor } from 'rxrest'
-import {of} from 'most'
+import { RxRest, RequestInterceptor, ResponseInterceptor, RxRestConfiguration } from 'rxrest'
+import { of } from 'most'
 import * as nodeStatusCodes from 'node-status-codes'
-
-const rxRest = new RxRest()
 
 export declare type RequestIdentifier = {url: string|RegExp, method: string}
 
@@ -33,11 +31,13 @@ export class RxRestAssert {
   $current: any;
   $requestCount: number = 0;
   log: boolean;
+  config: RxRestConfiguration
 
-  constructor(options: RxRestAssertOptions = {log: false}) {
+  constructor(config: RxRestConfiguration, options: RxRestAssertOptions = {log: false}) {
     this.log = options.log
+    this.config = config
 
-    this.$requestInterceptorIndex = rxRest.requestInterceptors.push((request: Request) => {
+    this.$requestInterceptorIndex = config.requestInterceptors.push((request: Request) => {
       this.$requestCount++
 
       let expect = this.$expectations[this.$expectations.length - 1]
@@ -58,7 +58,7 @@ export class RxRestAssert {
       this.$current = null
     })
 
-    rxRest.fetch = (request: Request) => {
+    config.fetch = (request: Request) => {
       const defaultResponse = new Response('{}', {
         status: 200,
         statusText: 'OK',
@@ -91,7 +91,7 @@ export class RxRestAssert {
       return of(response)
     }
 
-    this.$responseInterceptorIndex = rxRest.responseInterceptors.push((response: Response) => {
+    this.$responseInterceptorIndex = config.responseInterceptors.push((response: Response) => {
       if (this.$current !== null && this.$current !== 'expectation') {
         this.$whens.delete(this.$current)
       }
@@ -174,7 +174,7 @@ export class RxRestAssert {
   }
 
   $getRequestURL(request: Request): string {
-    return request.url.replace(rxRest.baseURL, '').replace(/\?.+/, '').replace(/\/$/, '')
+    return request.url.replace(this.config.baseURL, '').replace(/\?.+/, '').replace(/\/$/, '')
   }
 
   $matchURL(url: string|RegExp, requestURL: string) {
@@ -263,13 +263,13 @@ export class RxRestAssert {
     this.resetExpectations()
     this.$whens = new Map()
     this.$requestCount = 0
-    rxRest.fetch = null
-    rxRest.requestInterceptors = rxRest.requestInterceptors
+    this.config.fetch = null
+    this.config.requestInterceptors = this.config.requestInterceptors
       .filter((e: RequestInterceptor, i: number) => {
         return i === this.$requestInterceptorIndex
       })
 
-    rxRest.responseInterceptors = rxRest.responseInterceptors
+    this.config.responseInterceptors = this.config.responseInterceptors
       .filter((e: ResponseInterceptor, i: number) => {
         return i === this.$responseInterceptorIndex
       })
