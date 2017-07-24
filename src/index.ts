@@ -6,15 +6,7 @@ import * as nodeStatusCodes from 'node-status-codes'
 
 export declare type RequestIdentifier = {url: string|RegExp, method: string}
 
-export interface FixedHeaders extends Map<string, string> {
-  append: (name: string, value: string) => void;
-}
-
-export interface RequestWithHeaders extends Request {
-  headers: FixedHeaders;
-}
-
-export type TestFunction = (request: RequestWithHeaders) => boolean
+export type TestFunction = (request: Request) => boolean
 export type RxRestAssertOptions = {
   log: boolean;
 }
@@ -98,7 +90,7 @@ export class RxRestAssert {
     })
   }
 
-  $expectation(method: string, url: string|RegExp, data?: RequestWithHeaders|TestFunction, assertion: boolean = true) {
+  $expectation(method: string, url: string|RegExp, data?: Request|TestFunction, assertion: boolean = true) {
     const self = this
 
     this.$log(`Preparing expectation on ${method} ${url}`)
@@ -117,7 +109,7 @@ export class RxRestAssert {
         self.$throw(`URL should ${url instanceof RegExp ? `match "${url.toString()}"` : `be "${url}"`}, got "${requestURL}"`)
       }
 
-      if (typeof data === 'function' && !data(request as RequestWithHeaders)) {
+      if (typeof data === 'function' && !data(request)) {
         self.$throw('The request test failed')
       } else if (data instanceof Request) {
 
@@ -135,7 +127,7 @@ export class RxRestAssert {
         let requestQueryParams = requestQueryParamsString === null ? new URLSearchParams() : new URLSearchParams(requestQueryParamsString[1])
 
         if (expectedQueryParams.toString().length) {
-          for (let param of expectedQueryParams as URLSearchParamsFix) {
+          for (let param of expectedQueryParams) {
             let requestQueryParam = requestQueryParams.get(param[0])
             if (requestQueryParam !== param[1]) {
               self.$throw(`Query param "${param[0]}" does not match on Request, found "${requestQueryParam}" but "${param[1]}" was expected`)
@@ -183,7 +175,7 @@ export class RxRestAssert {
 
   expect(method: string, url: string|RegExp, data?: Request|TestFunction): {respond: Respond} {
     method = method.toUpperCase()
-    let expect = this.$expectation(method, url, data as RequestWithHeaders)
+    let expect = this.$expectation(method, url, data)
     let index = this.$expectations.push(expect)
     return {respond: expect.respond}
   }
@@ -214,7 +206,7 @@ export class RxRestAssert {
 
   when(method: string, url: string|RegExp, data?: Request): {respond: Respond} {
     method = method.toUpperCase()
-    let expect = this.$expectation(method, url, data as RequestWithHeaders, false)
+    let expect = this.$expectation(method, url, data, false)
     this.$whens.set({url: url, method: method}, expect)
     return {respond: expect.respond}
   }
