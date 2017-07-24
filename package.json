@@ -28,7 +28,7 @@
     "typescript": "^2.2.1"
   },
   "peerDependencies": {
-    "rxrest": "^3.0.1"
+    "rxrest": "^4.0.4"
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
