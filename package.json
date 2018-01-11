@@ -1,6 +1,6 @@
 {
   "name": "rxrest-assert",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "Assert library for RxRest",
   "main": "lib/index.js",
   "scripts": {
