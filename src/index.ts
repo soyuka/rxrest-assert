@@ -1,8 +1,7 @@
 /// <reference path="../node-status-code.d.ts" />
 
 import { RequestInterceptor, ResponseInterceptor, RxRestConfiguration } from 'rxrest'
-import { Observable } from 'rxjs/Rx'
-import 'rxjs/add/observable/of'
+import { of } from 'rxjs'
 import * as nodeStatusCodes from 'node-status-codes'
 
 export declare type RequestIdentifier = {url: string|RegExp, method: string}
@@ -61,7 +60,7 @@ export class RxRestAssert {
       this.$log(`Doing a request ${request.method} ${request.url}`)
 
       if (this.$current === null) {
-        return Observable.of(defaultResponse)
+        return of(defaultResponse)
       }
 
       let expectation: any
@@ -81,7 +80,7 @@ export class RxRestAssert {
 
       let response = expectation.response ? expectation.response : defaultResponse
 
-      return Observable.of(response)
+      return of(response)
     }
 
     this.$responseInterceptorIndex = config.responseInterceptors.push((response: Response) => {
